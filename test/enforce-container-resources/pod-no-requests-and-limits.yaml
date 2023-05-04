@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: no-requests-and-limits
+  namespace: not-excluded
+spec:
+  containers:
+    - name: no-requests-and-limits
+      image: nginx
+      resources:
+        requests: {}
+        limits: {}

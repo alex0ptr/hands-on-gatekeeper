@@ -1,0 +1,121 @@
+kind: Suite
+apiVersion: test.gatekeeper.sh/v1alpha1
+tests:
+  - name: enforce-container-resources
+    template: ../../constrainttemplates/enforce-container-resources.yaml
+    constraint: constraint.yaml
+    cases:
+      - name: different-memory
+        object: pod-different-memory.yaml
+        assertions:
+          - violations: 2
+      - name: different-memory-excluded-namespace
+        object: pod-different-memory-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-limit-cpu
+        object: pod-no-limit-cpu.yaml
+        assertions:
+          - violations: 0
+      - name: no-limit-cpu-excluded-namespace
+        object: pod-no-limit-cpu-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-limit-cpu-and-memory
+        object: pod-no-limit-cpu-and-memory.yaml
+        assertions:
+          - violations: 1
+            message: "[container <no\\-limit\\-cpu\\-and\\-memory> has no cpu limit container <no\\-limit\\-cpu\\-and\\-memory> has no memory limit]"
+            
+      - name: no-limit-cpu-and-memory-excluded-namespace
+        object: pod-no-limit-cpu-and-memory-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-limit-memory-excluded-namespace-cronjob
+        object: cronjob-no-limit-memory-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-limit-memory
+        object: pod-no-limit-memory.yaml
+        assertions:
+          - violations: 2
+      - name: no-limit-memory-excluded-namespace
+        object: pod-no-limit-memory-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-limits
+        object: pod-no-limits.yaml
+        assertions:
+          - violations: 1
+            message: "[container <no\\-limits> has no resource limits]"
+      - name: no-limits-excluded-namespace
+        object: pod-no-limits-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-request-cpu
+        object: pod-no-request-cpu.yaml
+        assertions:
+          - violations: 2
+      - name: no-request-cpu-excluded-namespace
+        object: pod-no-request-cpu-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-request-cpu-and-memory
+        object: pod-no-request-cpu-and-memory.yaml
+        assertions:
+          - violations: 3
+      - name: no-request-cpu-and-memory-excluded-namespace
+        object: pod-no-request-cpu-and-memory-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-request-memory
+        object: pod-no-request-memory.yaml
+        assertions:
+          - violations: 2
+      - name: no-request-memory-excluded-namespace
+        object: pod-no-request-memory-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-requests
+        object: pod-no-requests.yaml
+        assertions:
+          - violations: 2
+      - name: no-requests-excluded-namespace
+        object: pod-no-requests-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: no-requests-and-limits
+        object: pod-no-requests-and-limits.yaml
+        assertions:
+          - violations: 3
+            message: "[container <no\\-requests\\-and\\-limits> has no cpu request container. <no\\-requests\\-and\\-limits> has no memory request. container <no\\-requests\\-and\\-limits> has no memory limit]"
+      - name: no-requests-and-limits-job
+        object: job-no-requests-and-limits.yaml
+        assertions:
+          - violations: 3
+            message: "[container <no\\-requests\\-and\\-limits> has no cpu request container. <no\\-requests\\-and\\-limits> has no memory request. container <no\\-requests\\-and\\-limits> has no memory limit]"
+      - name: no-resources
+        object: pod-no-resources.yaml
+        assertions:
+          - violations: 1
+            message: "[container <no\\-resources> has no resource requests/limits]"
+      - name: dep-multiple-problems
+        object: deployment-multiple-problems.yaml
+        assertions:
+          - violations: 3
+      - name: no-resources-excluded-namespace
+        object: pod-no-resources-excluded-namespace.yaml
+        assertions:
+          - violations: 0
+      - name: proper
+        object: pod-proper.yaml
+        assertions:
+          - violations: 0
+      - name: stateful-proper
+        object: statefulset-proper.yaml
+        assertions:
+          - violations: 0
+      - name: stateful-mixed-nonmatching
+        object: statefulset-mixed-nonmatching.yaml
+        assertions:
+          - violations: 1

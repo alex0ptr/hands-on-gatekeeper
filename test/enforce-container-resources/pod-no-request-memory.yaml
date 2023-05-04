@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: no-request-memory
+spec:
+  containers:
+    - name: no-request-memory
+      image: nginx
+      resources:
+        requests:
+          cpu: "250m"
+        limits:
+          memory: "64Mi"
+          cpu: "500m"

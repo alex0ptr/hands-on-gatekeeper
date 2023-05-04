@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: no-limit-cpu-and-memory
+  namespace: ingress-nginx
+spec:
+  containers:
+    - name: no-limit-cpu-and-memory-en
+      image: nginx
+      resources:
+        requests:
+          memory: "64Mi"
+          cpu: "250m"
+        limits: {}

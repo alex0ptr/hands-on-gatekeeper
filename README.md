@@ -3,11 +3,6 @@
 A repository to learn how to work with gatekeeper through gator.
 
 In this workshop you will learn to write gatekeeper policies using _constraints_ and _constraint templates_.
-You successfully implemented all policies once the following command completes without test failures:
-
-```shell
-gator verify ./test/...
-```
 
 ## Your first constraint: forcing users to define a backup policy for volumes
 
@@ -42,6 +37,38 @@ Edit `constraints/pvc-backup-policy.yaml` so that the following command returns 
 gator verify ./test/pvc-backup-policy/
 ```
 
-## Task 2
+## Writing a constraint template: force recommended container resources
 
-## Task 3
+As a k8s you are aware that setting container resources makes sense, secifically:
+
+1. Setting requests helps the scheduler decide on which pods to schedule your pod -> users should define requests.
+2. Setting different values for memory requests than limit might lead to overprovisioned nodes and may cause out of memory crashes -> users should make sure `requests.memory == limits.memory`.
+3. [Setting cpu limits rarely makes sense](https://home.robusta.dev/blog/stop-using-cpu-limits) -> setting none is desired in most cases.
+
+Help the users of your cluster by defining polcies.
+Implement a constraint template that can be applied to enforce your recommendations.
+Edit `constrainttemplates/enforce-container-resources.yaml` so that the following command returns no test failures:
+
+```shell
+gator verify ./test/enforce-container-resources/
+```
+
+## Advanced rego: write complex policies using library functions
+
+You are using nginx ingress and want to make sure users can not define ingresses that expose to non-approved networks without your explicit consent.
+Normally users can override the default whitelisting by defining [an annotaiton](https://kubernetes.github.io/ingress-nginx/user-guide/nginx-configuration/annotations/#whitelist-source-range).
+
+Define a constraint template that allows restricting this annotation to known cidrs defined in the constraint as a parameter.
+Edit `constrainttemplates/require-approved-cidrs-on-ingress-whitelist.yaml` so that the following command returns no test failures:
+
+```shell
+gator verify ./test/required-cidr-whitelist-ingress/
+```
+
+## Finish
+
+You successfully implemented all policies once the following command completes without test failures:
+
+```shell
+gator verify ./test/...
+```

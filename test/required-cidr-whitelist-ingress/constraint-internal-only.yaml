@@ -1,0 +1,11 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sDenyUnapprovedCidrsOnIngressWhitelist
+metadata:
+  name: allow-internal-ingress-only
+spec:
+  match:
+    kinds:
+      - apiGroups: ["networking.k8s.io"]
+        kinds: ["Ingress"]
+  parameters:
+    allowedCidrs: ["10.0.0.0/8", "172.16.0.0/16"]

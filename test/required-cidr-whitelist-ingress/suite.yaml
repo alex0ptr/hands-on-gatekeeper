@@ -1,0 +1,37 @@
+kind: Suite
+apiVersion: test.gatekeeper.sh/v1alpha1
+tests:
+  - name: emtpy allowedCidrs should only allow ingresses without custom whitelist
+    template: ../../constrainttemplates/require-approved-cidrs-on-ingress-whitelist.yaml
+    constraint: constraint-empty-whitelist.yaml
+    cases:
+      - name: no defined whitelist should not yield any violations
+        object: ingress-without-custom-whitelist.yaml
+        assertions:
+          - violations: 0
+      - name: any defined whitelist should yield a violation
+        object: ingress-with-random-cidr.yaml
+        assertions:
+          - violations: 1
+  - name: internal allowedCidrs should only allow ingresses without internal cidrs
+    template: ../../constrainttemplates/require-approved-cidrs-on-ingress-whitelist.yaml
+    constraint: constraint-internal-only.yaml
+    cases:
+      - name: an ingress withwout custom whitelist should be allowed
+        object: ingress-without-custom-whitelist.yaml
+        assertions:
+          - violations: 0
+      - name: an ingress with multiple internal cidrs should be allowed
+        object: ingress-with-internal-sub-cidr.yaml
+        assertions:
+          - violations: 0
+      - name: an ingress with internal and other cidrs should be rejected
+        object: ingress-with-internal-and-random-cidr.yaml
+        assertions:
+          - violations: 1
+            message: "Ingress 'some-ingress' contains unapproved cidr: 1.1.1.1/24"
+      - name: an ingress with a random cidr should be rejected
+        object: ingress-with-random-cidr.yaml
+        assertions:
+          - violations: 1
+            message: "Ingress 'some-ingress' contains unapproved cidr: 1.1.1.1/24"

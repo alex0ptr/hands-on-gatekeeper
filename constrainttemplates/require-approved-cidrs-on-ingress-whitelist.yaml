@@ -1,0 +1,42 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8sdenyunapprovedcidrsoningresswhitelist
+  annotations:
+    description: Ensures that Ingress resources with a custom whitelist that contains non-approved are denied.
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sDenyUnapprovedCidrsOnIngressWhitelist
+      validation:
+        # Schema for the `parameters` field
+        openAPIV3Schema:
+          type: object
+          properties:
+            allowedCidrs:
+              type: array
+              items:
+                type: string
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8sdenyunapprovedcidrsoningresswhitelist
+
+        import future.keywords.every
+
+        violation[{"msg": msg}] {
+          input.review.object.kind == "Ingress"
+          cidrs_string := input.review.object.metadata.annotations["nginx.ingress.kubernetes.io/whitelist-source-range"]
+          allowedCidrs := input.parameters.allowedCidrs
+
+          cidrs := split(cidrs_string, ",")
+          aCidr := cidrs[_]
+          not cidr_is_subnet_of_any_cidr(aCidr, allowedCidrs)
+
+          msg := sprintf("Ingress '%v' contains unapproved cidr: %v", [input.review.object.metadata.name, aCidr])
+        }
+
+        cidr_is_subnet_of_any_cidr(subnet_cidr, cidrs) {
+          net.cidr_contains(cidrs[_], subnet_cidr)
+        }

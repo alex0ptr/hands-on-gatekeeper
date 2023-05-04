@@ -1,0 +1,92 @@
+apiVersion: templates.gatekeeper.sh/v1
+kind: ConstraintTemplate
+metadata:
+  name: k8senforcecontainerresources
+  annotations:
+    description: Ensures that resource requests and limits of containers are set and prevents overprovisioning of memory.
+spec:
+  crd:
+    spec:
+      names:
+        kind: K8sEnforceContainerResources
+  targets:
+    - target: admission.k8s.gatekeeper.sh
+      rego: |
+        package k8scontainerresources
+
+        
+        # missing checks both null and empty cases
+        missing(obj, field) = true {
+          not obj[field]
+        }
+
+        missing(obj, field) = true {
+          obj[field] == ""
+        }
+
+        violation[{"msg": msg, "details": {}}] {
+            c := input_containers[_]
+            not c.resources
+            msg := sprintf("container <%v> has no resource requests/limits.", [c.name])
+        }
+
+        violation[{"msg": msg, "details": {}}] {
+            c := input_containers[_]
+            c.resources
+            not c.resources.limits
+            msg := sprintf("container <%v> has no resource limits.", [c.name])
+        }
+
+        violation[{"msg": msg, "details": {}}] {
+          c := input_containers[_]
+          missing(c.resources.limits, "memory")
+          msg := sprintf("container <%v> has no memory limit.", [c.name])
+        }
+
+        violation[{"msg": msg, "details": {}}] {
+            c := input_containers[_]
+            c.resources
+            not c.resources.requests
+            msg := sprintf("container <%v> has no resource requests.", [c.name])
+        }
+
+        violation[{"msg": msg, "details": {}}] {
+          c := input_containers[_]
+          missing(c.resources.requests, "cpu")
+          msg := sprintf("container <%v> has no cpu request.", [c.name])
+        }
+
+        violation[{"msg": msg, "details": {}}] {
+          c := input_containers[_]
+          missing(c.resources.requests, "memory")
+          msg := sprintf("container <%v> has no memory request.", [c.name])
+        }
+
+        violation[{"msg": msg, "details": {}}] {
+          c := input_containers[_]
+          c.resources.limits.memory != c.resources.requests.memory
+          msg := sprintf("memory requests and limits for container <%v> must be equal.", [c.name])
+        }
+
+        violation[{"msg": msg, "details": {}}] {
+          c := input_containers[_]
+          c.resources.limits.cpu
+          msg := sprintf("cpu limits set for container <%v>, should be none", [c.name])
+        }
+
+        # input_containers gathers all possible container definitions
+        input_containers[c] {
+          c = input.review.object.spec.containers[_]
+        }
+
+        input_containers[c] {
+          c = input.review.object.spec.initContainers[_]
+        }
+
+        input_containers[c] {
+          c = input.review.object.spec.template.spec.containers[_]
+        }
+
+        input_containers[c] {
+          c = input.review.object.spec.template.spec.initContainers[_]
+        }

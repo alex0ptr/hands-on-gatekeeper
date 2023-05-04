@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: no-requests
+spec:
+  containers:
+    - name: no-requests
+      image: nginx
+      resources:
+        limits:
+          memory: "64Mi"
+          cpu: "500m"
