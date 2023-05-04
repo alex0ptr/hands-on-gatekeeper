@@ -1,10 +1,11 @@
 # hands-on-gatekeeper
+
 A repository to learn how to work with gatekeeper through gator.
 
 In this workshop you will learn to write gatekeeper policies using _constraints_ and _constraint templates_.
 You successfully implemented all policies once the following command completes without test failures:
 
-```
+```shell
 gator verify ./test/...
 ```
 
@@ -37,7 +38,7 @@ Additionally you want to allow `none` in case no schedule should be applied, e.g
 Define a constraint that fulfills the requirements unsing the constraint template of `constrainttemplates/required-labels.yaml`.
 Edit `constraints/pvc-backup-policy.yaml` so that the following command returns no test failures:
 
-```
+```shell
 gator verify ./test/pvc-backup-policy/
 ```
 
