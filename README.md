@@ -37,6 +37,14 @@ Edit `constraints/pvc-backup-policy.yaml` so that the following command returns 
 gator verify ./test/pvc-backup-policy/
 ```
 
+<details>
+<summary>Cheat</summary>
+
+```shell
+git diff main solution constraints/pvc-backup-policy.yaml
+```
+</details>
+
 ## Writing a constraint template: force recommended container resources
 
 As a k8s you are aware that setting container resources makes sense, secifically:
@@ -53,6 +61,14 @@ Edit `constrainttemplates/enforce-container-resources.yaml` so that the followin
 gator verify ./test/enforce-container-resources/
 ```
 
+<details>
+<summary>Cheat</summary>
+
+```shell
+git diff main solution constrainttemplates/enforce-container-resources.yaml
+```
+</details>
+
 ## Advanced rego: write complex policies using library functions
 
 You are using nginx ingress and want to make sure users can not define ingresses that expose to non-approved networks without your explicit consent.
@@ -64,6 +80,15 @@ Edit `constrainttemplates/require-approved-cidrs-on-ingress-whitelist.yaml` so t
 ```shell
 gator verify ./test/required-cidr-whitelist-ingress/
 ```
+
+
+<details>
+<summary>Cheat</summary>
+
+```shell
+git diff main solution constrainttemplates/require-approved-cidrs-on-ingress-whitelist.yaml
+```
+</details>
 
 ## Finish
 
