@@ -30,13 +30,11 @@ spec:
           cidrs_string := input.review.object.metadata.annotations["nginx.ingress.kubernetes.io/whitelist-source-range"]
           allowedCidrs := input.parameters.allowedCidrs
 
-          cidrs := split(cidrs_string, ",")
-          aCidr := cidrs[_]
-          not cidr_is_subnet_of_any_cidr(aCidr, allowedCidrs)
+          # TODO see: https://www.openpolicyagent.org/docs/latest/policy-reference/#builtin-strings-split
 
           msg := sprintf("Ingress '%v' contains unapproved cidr: %v", [input.review.object.metadata.name, aCidr])
         }
 
         cidr_is_subnet_of_any_cidr(subnet_cidr, cidrs) {
-          net.cidr_contains(cidrs[_], subnet_cidr)
+          # see: https://www.openpolicyagent.org/docs/latest/policy-reference/#builtin-net-netcidr_contains
         }

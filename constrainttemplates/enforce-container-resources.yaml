@@ -32,8 +32,7 @@ spec:
 
         violation[{"msg": msg, "details": {}}] {
             c := input_containers[_]
-            c.resources
-            not c.resources.limits
+            # TODO
             msg := sprintf("container <%v> has no resource limits.", [c.name])
         }
 
@@ -45,32 +44,31 @@ spec:
 
         violation[{"msg": msg, "details": {}}] {
             c := input_containers[_]
-            c.resources
-            not c.resources.requests
+            # TODO
             msg := sprintf("container <%v> has no resource requests.", [c.name])
         }
 
         violation[{"msg": msg, "details": {}}] {
           c := input_containers[_]
-          missing(c.resources.requests, "cpu")
+          # TODO
           msg := sprintf("container <%v> has no cpu request.", [c.name])
         }
 
         violation[{"msg": msg, "details": {}}] {
           c := input_containers[_]
-          missing(c.resources.requests, "memory")
+          # TODO
           msg := sprintf("container <%v> has no memory request.", [c.name])
         }
 
         violation[{"msg": msg, "details": {}}] {
           c := input_containers[_]
-          c.resources.limits.memory != c.resources.requests.memory
+          # TODO
           msg := sprintf("memory requests and limits for container <%v> must be equal.", [c.name])
         }
 
         violation[{"msg": msg, "details": {}}] {
           c := input_containers[_]
-          c.resources.limits.cpu
+          # TODO
           msg := sprintf("cpu limits set for container <%v>, should be none", [c.name])
         }
 
