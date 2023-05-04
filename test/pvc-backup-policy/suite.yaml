@@ -1,0 +1,32 @@
+kind: Suite
+apiVersion: test.gatekeeper.sh/v1alpha1
+tests:
+  - name: enforce-pvc-backup
+    template: ../../constrainttemplates/required-labels.yaml
+    constraint: ../../constraints/pvc-backup-policy.yaml
+    cases:
+      - name: pvc-backup-anything-label
+        object: pvc-backup-anything-label.yaml
+        assertions:
+          - violations: 1
+      - name: pvc-backup-default-label
+        object: pvc-backup-default-label.yaml
+        assertions:
+          - violations: 0
+      - name: pvc-backup-none-label
+        object: pvc-backup-none-label.yaml
+        assertions:
+          - violations: 0
+      - name: pvc-backup-hourly-label
+        object: pvc-backup-hourly-label.yaml
+        assertions:
+          - violations: 0
+      - name: pvc-backup-monthly-label
+        object: pvc-backup-monthly-label.yaml
+        assertions:
+          - violations: 0
+      - name: pvc-no-backup-label
+        object: pvc-no-backup-label.yaml
+        assertions:
+          - violations: 1
+            message: "you must provide labels: {\"qaware.de/backup\"}"

@@ -1,0 +1,13 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: enforce-pvc-backup
+spec:
+  match:
+    kinds:
+      - apiGroups: [""]
+        kinds: ["PersistentVolumeClaim"]
+  parameters:
+    labels:
+      - key: "qaware.de/backup"
+        allowedRegex: "default|none|hourly|monthly"
